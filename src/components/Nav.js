@@ -1,23 +1,43 @@
-import { Link} from "gatsby";
-import PropTypes from "prop-types";
-import React from "react";
-import styled from 'styled-components';
+import { Link, useStaticQuery, graphql } from "gatsby"
+import PropTypes from "prop-types"
+import React from "react"
+import styled from "styled-components"
 
-import Container from './Container';
-import Title from './Title';
+import Container from "./Container"
+import Title from "./Title"
 
-const Nav = () => (
-  <NavContainer>
+const Nav = () => {
+  const data = useStaticQuery(graphql`
+    query SiteQuery {
+      site {
+        siteMetadata {
+          menuLinks {
+            name
+            link
+          }
+        }
+      }
+    }
+  `)
+
+  return (
+    <NavContainer>
       <NavHeader>
-        <Link
-          to="/"
-        >
+        <Link to="/">
           <Title />
         </Link>
       </NavHeader>
-  </NavContainer>
-);
-  
+      <LargeScreenMenu>
+        {data.site.siteMetadata.menuLinks.map(({ name, link }) => (
+          <LargeScreenMenuItem key={link} to={link}>
+            {name}
+          </LargeScreenMenuItem>
+        ))}
+      </LargeScreenMenu>
+    </NavContainer>
+  )
+}
+
 Nav.propTypes = {
   siteTitle: PropTypes.string,
 }
@@ -28,11 +48,25 @@ Nav.defaultProps = {
 
 const NavHeader = styled.h1`
   font-size: 20px;
-  margin: 0;
-`;
+`
 
 const NavContainer = styled(Container)`
   justify-content: space-between;
-`;
+`
 
-export default Nav;
+const LargeScreenMenu = styled.div`
+  display: flex;
+  font-size: 15px;
+  font-weight: bold;
+  text-transform: uppercase;
+
+  @media only screen and (max-width: ${props => props.theme.mediumBreakpoint}) {
+    display: none;
+  }
+`
+
+const LargeScreenMenuItem = styled(Link)`
+  margin-right: 20px;
+`
+
+export default Nav

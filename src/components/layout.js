@@ -8,10 +8,10 @@
 import React from "react"
 import PropTypes from "prop-types"
 import { useStaticQuery, graphql } from "gatsby"
-import { createGlobalStyle } from 'styled-components';
+import { createGlobalStyle, ThemeProvider } from "styled-components"
 
 import Nav from "./Nav"
-import Footer from './Footer';
+import Footer from "./Footer"
 import "./layout.css"
 
 const Layout = ({ children }) => {
@@ -20,18 +20,23 @@ const Layout = ({ children }) => {
       site {
         siteMetadata {
           title
+          themes {
+            mediumBreakpoint
+          }
         }
       }
     }
   `)
 
+  console.log(data.site.siteMetadata.themes[0])
+
   return (
-    <>
+    <ThemeProvider theme={data.site.siteMetadata.themes[0]}>
       <GlobalStyle />
       <Nav siteTitle={data.site.siteMetadata.title} />
-        <main>{children}</main>
+      <main>{children}</main>
       <Footer />
-    </>
+    </ThemeProvider>
   )
 }
 
@@ -40,6 +45,10 @@ Layout.propTypes = {
 }
 
 const GlobalStyle = createGlobalStyle`
+  body {
+    font-family: "Montserrat", sans-serif;
+  }
+
   a {
     text-decoration: none;
   }
